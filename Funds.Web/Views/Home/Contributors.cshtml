@@ -1,0 +1,205 @@
+﻿@model DataView
+<div class="container">
+    <main role="main" class="pb-3" style="margin-top: 60px;">
+        <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @Model.Message
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        </div>
+        <div>
+            <div class="container">
+                <main role="main" class="pb-3" style="margin-top: 60px;">
+                    <div>
+                        <h1>Contributors</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button class="btn btn-danger" id="new-contributor">New Contributor</button>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control-sm" placeholder="Search" id="search" />
+                            <button class="btn btn-danger" id="clear">Clear</button>
+                        </div>
+                        <div class="col-md-4">
+                            <h3></h3>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" id="my-table">
+                            <tr>
+                                <th>Deposit</th>
+                                <th>Name</th>
+                                <th>Cell</th>
+                                <th>Balance</th>
+                                <th>Always Include</th>
+                                <th>Actions</th>
+                            </tr>
+                            @foreach (var con in Model.Contributors)
+                            {
+                                <tr>
+                                    <td>
+                                        <button class="btn btn-success deposit-button" data-contribid="@con.id" data-first="@con.FirstName" data-last="@con.LastName" id="deposit-button">Deposit</button>
+                                    </td>
+                                    <td>@con.FirstName @con.LastName</td>
+                                    <td>
+                                        @con.Cell
+                                    </td>
+                                    <td>
+                                        @con.balance
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if (con.AlwaysInclude)
+                                        {
+                                            <h5>yes</h5>
+                                        }
+
+                                    </td>
+                                    <td>
+                                        <a href="/Home/history?contribid=@con.id" class="btn btn-primary">Show History</a>
+
+                                        <button data-first-name="@con.FirstName" data-last-name="@con.LastName"
+                                                data-cell="@con.Cell" data-id="@con.id" data-always-include="@con.AlwaysInclude" data-date="@con.Date"
+                                                class="btn btn-danger edit-contrib" id="edit-btn">
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        <div class="modal fade new-contrib" id="add-name-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">New Contributor</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="/Home/newcon">
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>First Name</label>
+                                                    <input class="form-control" id="contributor_first_name" name="FirstName" placeholder="First Name" type="text">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label>Last Name</label>
+                                                    <input class="form-control" id="contributor_last_name" name="LastName" placeholder="Last Name" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>Cell Number</label>
+                                                    <input class="form-control" id="contributor_cell_number" name="cell" placeholder="Cell Number" type="text">
+                                                </div>
+                                                <div class="form-group col-md-6" id="initialDepositDiv">
+                                                    <label>Initial Deposit</label>
+                                                    <input type="text" class="form-control" name="Deposit" placeholder="Initial Deposit">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>Created Date</label>
+                                                    <input class="form-control" id="contributor_created_at" name="Date" placeholder="Date" type="date">
+                                                </div>
+                                                <div>
+                                                    <div class="form-check mt-3 ml-3">
+                                                        <input type="checkbox" class="form-check-input" id="contributor_always_include" name="AlwaysInclude" value="true">
+                                                        <label class="form-check-label" for="contributor_always_include">Always Include</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button class="btn btn-primary">Save</button>
+                                        </div>
+                                    </form>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                        <div class="modal fade deposit" id="deposit-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Deposit for  <span id="deposit-name"></span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="/Home/deposit">
+                                        <input type="hidden" name="personid" id="deposit_id" />
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Amount</label>
+                                                <input class="form-control" name="Amount" placeholder="Deposit Amount" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Date</label>
+                                                <input type="date" name="Date" class="form-control" id="datepicker">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <input class="btn btn-primary" name="commit" type="submit" value="Save">
+                                        </div>
+                                    </form>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                        <div class="modal fade new-contrib" id="edit-name-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Contributor</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="/Home/editcon">
+                                        <input type="hidden" id="id" name="id" />
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>First Name</label>
+                                                    <input class="form-control" id="contributor_edit_first_name" name="FirstName" placeholder="First Name" type="text">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label>Last Name</label>
+                                                    <input class="form-control" id="contributor_edit_last_name" name="LastName" placeholder="Last Name" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>Cell Number</label>
+                                                    <input class="form-control" id="contributor_edit_cell_number" name="cell" placeholder="Cell Number" type="text">
+                                                </div>
+                                              
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <label>Created Date</label>
+                                                    <input class="form-control" id="contributor_edit_created_at" name="Date" placeholder="Date" type="date">
+                                                </div>
+                                                <div>
+                                                    <div class="form-check mt-3 ml-3">
+                                                        <input type="checkbox" class="form-check-input" id="contributor_always_include" name="AlwaysInclude" value="true">
+                                                        <label class="form-check-label" for="contributor-_edit_always_include">Always Include</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button class="btn btn-primary">Save</button>
+                                        </div>
+                                    </form>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                        @section Scripts {
+                            <script src="~/js/JavaScript.js"></script>
+                        };

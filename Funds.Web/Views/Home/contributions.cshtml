@@ -1,0 +1,54 @@
+﻿@model conView
+<div class="header">
+    <h1>
+        Contributors for the
+        @Model.Name
+    </h1>
+</div>
+<div class="table-responsive">
+    <form method="POST" action="/home/updatecontributions">
+        @*<input type="hidden" name="simchaId" value="@Model.id" />*@
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Contribute</th>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Always Include</th>
+                <th>Amount</th>
+            </tr>
+
+            @foreach (var con in Model.contributors)
+            {
+                <input type="hidden" name="simchaId" value="@Model.id" />
+                <input type="hidden" name="contributors[@con.x].ContributorId" value="@con.id" />
+                <tr>
+                    <td>
+                        <input class="contribute" id="check_box" type="checkbox" name="contributors[@con.x].Include" value="true" />
+                    </td>
+                    <td> @con.FirstName @con.LastName</td>
+                    <td>@con.balance</td>
+                    <td style="text-align: center;">
+                        @if (con.AlwaysInclude)
+                        {
+                            <h5>yes</h5>
+                        }
+
+
+                    </td>
+                    <td>
+                        <input type="text" name="contributors[@con.x].amount" class="form-control" />
+                    </td>
+                </tr>
+
+
+            }
+
+        </table>
+        <div style="text-align:center;">
+            <button class="btn-lg btn-danger" id="update">Update</button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script src="~/js/JavaScript2.js"></script>
+};
