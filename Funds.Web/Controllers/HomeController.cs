@@ -134,6 +134,17 @@ namespace Funds.Web.Controllers
                 con.balance = balance;
                 con.x = x;
                 x++;
+                int gave= db.GetIfGaveToSim(simchaid,con.id);
+                {
+                    if(gave==0)
+                    {
+                        con.Include = false;
+                    }
+                    else
+                    {
+                        con.Include = true;
+                    }
+                }
             }
             string name = db.GetSim(simchaid);
             conView cv = new conView
@@ -145,16 +156,19 @@ namespace Funds.Web.Controllers
             return View(cv);
         }
         [HttpPost]
-        public IActionResult updatecontributions(List<Contributions> contributors,int simchaId)
+        public IActionResult updatecontributions(List<Contributor> contributors,int simchaId)
         {
             Database db = new Database(_connectionString);
+            db.DeleteCon(simchaId);
             foreach(var con in contributors)
             {
-                con.simchaId = simchaId;
+                con.SimchaId = simchaId;
                 if(con.Include)
                 {
                     db.AddContribution(con);
+                    
                 }
+              
                
             }
             return Redirect("/Home/Index");

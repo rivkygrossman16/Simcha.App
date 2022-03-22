@@ -166,6 +166,17 @@ namespace Funds.Data
             int id = (int)(decimal)cmd.ExecuteScalar();
             return id;
         }
+        public int GetIfGaveToSim(int id,int contributorid)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            using SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"select ISNULL(COUNT(*),0) FROM CONTRIBUTIONS WHERE SimchaId=@id and ContributorId=@ContributorId";
+            cmd.Parameters.AddWithValue("@ContributorId", contributorid);
+            cmd.Parameters.AddWithValue("@id",id);
+            conn.Open();
+            int amount = (int)cmd.ExecuteScalar();
+            return amount;
+        }
 
         public void AddDeposit(Deposit deposit)
         {
@@ -190,19 +201,29 @@ namespace Funds.Data
             SqlDataReader reader = cmd.ExecuteReader();
             conn.Close();
         }
-        public void AddContribution(Contributions contribution)
+        public void AddContribution(Contributor contributions)
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
             using SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"INSERT INTO Contributions VALUES(@SimchaId,@ContributorId,@Amount)";
-            cmd.Parameters.AddWithValue("@SimchaId", contribution.simchaId);
-            cmd.Parameters.AddWithValue("@ContributorId", contribution.ContributorId);
-            cmd.Parameters.AddWithValue("@Amount", contribution.amount);
+            cmd.Parameters.AddWithValue("@SimchaId", contributions.SimchaId);
+            cmd.Parameters.AddWithValue("@ContributorId", contributions.id);
+            cmd.Parameters.AddWithValue("@Amount", contributions.Amount);
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
             conn.Close();
         }
-
+        public void DeleteCon(int id)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            using SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"Delete from Contributions where Simchaid=@id";
+            cmd.Parameters.AddWithValue("id", id);
+         
+            conn.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+            conn.Close();
+        }
         public List<Simcha> GetAllSim()
         {
             using SqlConnection connection = new SqlConnection(_connectionString);
@@ -224,6 +245,14 @@ namespace Funds.Data
             }
             return simchos;
 
+        }
+        public bool ConGaveToSimcha(int id)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            using SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"";
+            bool gave = (bool)cmd.ExecuteScalar();
+            return gave;
         }
         public Contributor GetConById(int id)
         {
@@ -270,6 +299,9 @@ namespace Funds.Data
             public int Deposit { get; set; }
         public int balance { get; set; }
         public int x { get; set; }
+        public bool Include { get; set; }
+        public int SimchaId { get; set; }
+        public int Amount { get; set; }
         }
         public class Deposit
         {
@@ -299,5 +331,6 @@ namespace Funds.Data
         public int amount { get; set; }
         public int simchaId { get; set; }
         public bool Include { get; set; }
+       
     }
 }

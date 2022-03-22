@@ -20,10 +20,10 @@
             @foreach (var con in Model.contributors)
             {
                 <input type="hidden" name="simchaId" value="@Model.id" />
-                <input type="hidden" name="contributors[@con.x].ContributorId" value="@con.id" />
+                <input type="hidden" name="contributors[@con.x].id" value="@con.id" />
                 <tr>
                     <td>
-                        <input class="contribute" id="check_box" type="checkbox" name="contributors[@con.x].Include" value="true" />
+                        <input class=" form-control contribute" checked="@con.Include" id="check_box" type="checkbox" name="contributors[@con.x].Include" value="true" />
                     </td>
                     <td> @con.FirstName @con.LastName</td>
                     <td>@con.balance</td>
@@ -36,7 +36,7 @@
 
                     </td>
                     <td>
-                        <input type="text" name="contributors[@con.x].amount" class="form-control" />
+                        <input type="text" name="contributors[@con.x].Amount" class="form-control" />
                     </td>
                 </tr>
 

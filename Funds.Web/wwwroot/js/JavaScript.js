@@ -34,10 +34,12 @@
         $('#contributor_edit_cell_number').val(cell);
         const alwaysInclude = button.data('always-include');
         $('#contributor_edit_always_include').val(alwaysInclude);
+    
         const date = button.data('date');
-        $('#contributor_edit_created_at').val(date);
+        $('#contributor_edit_created_at').val(date.to);
         const id = button.data('id');
         $('#id').val(id);
+      
         
     });
     //getter
